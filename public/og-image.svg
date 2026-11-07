@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#100b26"/><stop offset=".55" stop-color="#2a1651"/><stop offset="1" stop-color="#ff4fd8"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <path d="M0 70h1200M0 140h1200M0 210h1200M0 280h1200M0 350h1200M0 420h1200M0 490h1200M0 560h1200" stroke="#fff" opacity=".07" stroke-width="2"/>
+  <rect x="78" y="92" width="116" height="116" fill="#f6e85b"/><path d="M112 137a25 25 0 0 1 48 0v25h-48v-25Z" fill="#100b26"/><circle cx="127" cy="149" r="4" fill="#f6e85b"/><circle cx="145" cy="149" r="4" fill="#f6e85b"/>
+  <text x="78" y="330" fill="#fff" font-family="monospace" font-weight="700" font-size="92">MBR<tspan fill="#ff4fd8">8</tspan></text>
+  <text x="84" y="390" fill="#5de5ff" font-family="monospace" font-size="24" letter-spacing="8">ARCADE SUPPLY</text>
+  <text x="80" y="505" fill="#f6e85b" font-family="monospace" font-weight="700" font-size="45">LEVEL UP YOUR PLAY.</text>
+</svg>

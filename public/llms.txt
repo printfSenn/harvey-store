@@ -1,0 +1,16 @@
+# Harvey Store
+
+> Harvey Store is a retro 8-bit game top-up storefront for Indonesian players.
+
+## Key pages
+
+- Arcade: https://mbr8arcade.com/
+- Top up: https://mbr8arcade.com/topup.html
+- Arcade News: https://mbr8arcade.com/news.html
+- Player reviews: https://mbr8arcade.com/ratings.html
+
+## Content notes
+
+- The catalog includes real game titles and wallet products.
+- Product cards intentionally do not publish starting prices; players choose a nominal on the top-up page.
+- Contact: hello@mbr8arcade.com
