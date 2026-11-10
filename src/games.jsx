@@ -307,7 +307,7 @@ export const games = [
         "group": "weekly-card"
       }
     ],
-    "image": "/game-art/mobile-legends.webp"
+    "image": "/game-art/cards/mobile-legends.png"
   },
   {
     "id": "free-fire",
@@ -374,7 +374,7 @@ export const games = [
         "price": 9009009
       }
     ],
-    "image": "/game-art/free-fire.webp"
+    "image": "/game-art/cards/free-fire.png"
   },
   {
     "id": "pubg-mobile",
@@ -440,7 +440,7 @@ export const games = [
         "price": 1920000
       }
     ],
-    "image": "/game-art/pubg-mobile.webp"
+    "image": "/game-art/cards/pubg-mobile.png"
   },
   {
     "id": "genshin-impact",
@@ -543,7 +543,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/genshin-impact.webp"
+    "image": "/game-art/cards/genshin-impact.png"
   },
   {
     "id": "valorant",
@@ -615,7 +615,7 @@ export const games = [
         "group": "bundle"
       }
     ],
-    "image": "/game-art/valorant.webp"
+    "image": "/game-art/cards/valorant.png"
   },
   {
     "id": "minecraft",
@@ -764,7 +764,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/roblox.webp"
+    "image": "/game-art/cards/roblox.webp"
   },
   {
     "id": "honkai-star-rail",
@@ -887,7 +887,7 @@ export const games = [
         "group": "monthly-pass"
       }
     ],
-    "image": "/game-art/honkai-star-rail.webp"
+    "image": "/game-art/cards/honkai-star-rail.png"
   },
   {
     "id": "cod-mobile",
@@ -1082,7 +1082,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/fc-mobile.webp"
+    "image": "/game-art/cards/fc-mobile.png"
   },
   {
     "id": "honkai-impact",
@@ -1187,7 +1187,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/honkai-impact.webp"
+    "image": "/game-art/cards/honkai-impact.png"
   },
   {
     "id": "magic-chess",
@@ -1300,7 +1300,7 @@ export const games = [
         "group": "special-offer"
       }
     ],
-    "image": "/game-art/magic-chess.webp"
+    "image": "/game-art/cards/magic-chess.png"
   },
   {
     "id": "wuthering-waves",
@@ -1403,7 +1403,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/wuthering-waves.webp"
+    "image": "/game-art/cards/wuthering-waves.png"
   },
   {
     "id": "clash-of-clans",
@@ -1490,7 +1490,7 @@ export const games = [
         "group": "bundle"
       }
     ],
-    "image": "/game-art/clash-of-clans.webp"
+    "image": "/game-art/cards/clash-of-clans.png"
   },
   {
     "id": "clash-royale",
@@ -1643,7 +1643,7 @@ export const games = [
         "price": 600000
       }
     ],
-    "image": "/game-art/csgo.webp"
+    "image": "/game-art/cards/csgo.png"
   },
   {
     "id": "steam-wallet",
@@ -1689,7 +1689,7 @@ export const games = [
         "price": 600000
       }
     ],
-    "image": "/game-art/steam-wallet.webp"
+    "image": "/game-art/cards/steam-wallet.png"
   },
   {
     "id": "playstation-store",
@@ -1764,7 +1764,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/playstation-store.webp"
+    "image": "/game-art/cards/playstation-store.png"
   },
   {
     "id": "where-winds-meet",
@@ -1839,7 +1839,7 @@ export const games = [
         "group": "pass"
       }
     ],
-    "image": "/game-art/where-winds-meet.webp"
+    "image": "/game-art/cards/where-winds-meet.png"
   },
   {
     "id": "league-of-legends",
@@ -1901,7 +1901,7 @@ export const games = [
         "price": 1159200
       }
     ],
-    "image": "/game-art/league-of-legends.webp"
+    "image": "/game-art/cards/league-of-legends.png"
   },
   {
     "id": "honor-of-kings",
@@ -1994,7 +1994,7 @@ export const games = [
         "group": "weekly-card"
       }
     ],
-    "image": "/game-art/honor-of-kings.webp"
+    "image": "/game-art/cards/honor-of-kings.png"
   },
   {
     "id": "arknights",
@@ -2088,7 +2088,7 @@ export const games = [
         "group": "bundle"
       }
     ],
-    "image": "/game-art/arknights.webp"
+    "image": "/game-art/cards/arknights.png"
   },
   {
     "id": "zenless-zone-zero",
@@ -2154,7 +2154,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/zenless-zone-zero.webp"
+    "image": "/game-art/cards/zenless-zone-zero.png"
   },
   {
     "id": "neverness-to-everness",
@@ -2244,7 +2244,7 @@ export const games = [
         "group": "bundle"
       }
     ],
-    "image": "/game-art/neverness-to-everness.webp"
+    "image": "/game-art/cards/neverness-to-everness.png"
   },
   {
     "id": "blood-strike",
@@ -2336,7 +2336,7 @@ export const games = [
         "group": "pass"
       }
     ],
-    "image": "/game-art/blood-strike.webp"
+    "image": "/game-art/cards/blood-strike.png"
   },
   {
     "id": "delta-force",
@@ -2431,7 +2431,7 @@ export const games = [
         "group": "special-offer"
       }
     ],
-    "image": "/game-art/delta-force.webp"
+    "image": "/game-art/cards/delta-force.png"
   },
   {
     "id": "racing-master",
@@ -2520,7 +2520,7 @@ export const games = [
         "group": "bundle"
       }
     ],
-    "image": "/game-art/racing-master.webp"
+    "image": "/game-art/cards/racing-master.png"
   },
   {
     "id": "arena-of-valor",
@@ -2582,7 +2582,7 @@ export const games = [
         "price": 475000
       }
     ],
-    "image": "/game-art/arena-of-valor.webp"
+    "image": "/game-art/cards/arena-of-valor.png"
   },
   {
     "id": "azur-lane",
@@ -2671,7 +2671,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/azur-lane.webp"
+    "image": "/game-art/cards/azur-lane.png"
   }
 ];
 
