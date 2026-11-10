@@ -205,7 +205,7 @@ const orderPrefixes = {
   'mobile-legends': 'ML', 'free-fire': 'FF', 'pubg-mobile': 'PUBGM', 'genshin-impact': 'GENSHIN',
   valorant: 'VAL', minecraft: 'MC', roblox: 'ROBLOX', 'honkai-star-rail': 'HSR', 'cod-mobile': 'CODM',
   'fc-mobile': 'FCM', 'steam-wallet': 'STEAM', 'playstation-store': 'PS', 'honkai-impact': 'HI',
-  'magic-chess': 'MAGIC', 'wuthering-waves': 'WUWA', 'clash-of-clans': 'COC', 'clash-royale': 'CR', csgo: 'CSGO',
+  'magic-chess': 'MAGIC', 'wuthering-waves': 'WUWA', 'clash-of-clans': 'COC', 'clash-royale': 'CR', csgo: 'CS:GO',
 };
 
 const createUniqueOrderId = (game, existingOrders) => {

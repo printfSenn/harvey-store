@@ -306,7 +306,7 @@
           "group": "weekly-card"
         }
       ],
-      "image": ""
+      "image": "/game-art/mobile-legends.webp"
     },
     {
       "id": "free-fire",
@@ -373,7 +373,7 @@
           "price": 9009009
         }
       ],
-      "image": ""
+      "image": "/game-art/free-fire.webp"
     },
     {
       "id": "pubg-mobile",
@@ -438,7 +438,8 @@
           "label": "8100 UC",
           "price": 1920000
         }
-      ]
+      ],
+      "image": "/game-art/pubg-mobile.webp"
     },
     {
       "id": "genshin-impact",
@@ -540,7 +541,8 @@
           "group": "monthly-pass",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/genshin-impact.webp"
     },
     {
       "id": "valorant",
@@ -611,7 +613,8 @@
           "price": 224000,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/valorant.webp"
     },
     {
       "id": "minecraft",
@@ -668,7 +671,8 @@
           "group": "gift-card",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/minecraft.webp"
     },
     {
       "id": "roblox",
@@ -758,7 +762,8 @@
           "group": "premium",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/roblox.webp"
     },
     {
       "id": "honkai-star-rail",
@@ -880,7 +885,8 @@
           "price": 287454,
           "group": "monthly-pass"
         }
-      ]
+      ],
+      "image": "/game-art/honkai-star-rail.webp"
     },
     {
       "id": "cod-mobile",
@@ -974,7 +980,7 @@
           "price": 8501227
         }
       ],
-      "image": ""
+      "image": "/game-art/cod-mobile.webp"
     },
     {
       "id": "fc-mobile",
@@ -1074,7 +1080,8 @@
           "group": "bundle",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/fc-mobile.webp"
     },
     {
       "id": "honkai-impact",
@@ -1178,7 +1185,8 @@
           "group": "monthly-pass",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/honkai-impact.webp"
     },
     {
       "id": "magic-chess",
@@ -1290,7 +1298,8 @@
           "price": 15907,
           "group": "special-offer"
         }
-      ]
+      ],
+      "image": "/game-art/magic-chess.webp"
     },
     {
       "id": "wuthering-waves",
@@ -1392,7 +1401,8 @@
           "group": "monthly-pass",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/wuthering-waves.webp"
     },
     {
       "id": "clash-of-clans",
@@ -1478,7 +1488,8 @@
           "price": 1645000,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/clash-of-clans.webp"
     },
     {
       "id": "clash-royale",
@@ -1573,11 +1584,12 @@
           "price": 1560000,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/clash-royale.webp"
     },
     {
       "id": "csgo",
-      "title": "CSGO",
+      "title": "CS:GO",
       "category": "PC",
       "categories": [
         "PC"
@@ -1629,7 +1641,8 @@
           "label": "IDR 600.000 Wallet Code",
           "price": 600000
         }
-      ]
+      ],
+      "image": "/game-art/csgo.webp"
     },
     {
       "id": "steam-wallet",
@@ -1674,7 +1687,8 @@
           "label": "IDR 600.000 Wallet Code",
           "price": 600000
         }
-      ]
+      ],
+      "image": "/game-art/steam-wallet.webp"
     },
     {
       "id": "playstation-store",
@@ -1748,7 +1762,8 @@
           "group": "subscription",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/playstation-store.webp"
     },
     {
       "id": "where-winds-meet",
@@ -1822,7 +1837,8 @@
           "price": 351216,
           "group": "pass"
         }
-      ]
+      ],
+      "image": "/game-art/where-winds-meet.webp"
     },
     {
       "id": "league-of-legends",
@@ -1883,7 +1899,8 @@
           "label": "13500 RP",
           "price": 1159200
         }
-      ]
+      ],
+      "image": "/game-art/league-of-legends.webp"
     },
     {
       "id": "honor-of-kings",
@@ -1975,7 +1992,8 @@
           "price": 55300,
           "group": "weekly-card"
         }
-      ]
+      ],
+      "image": "/game-art/honor-of-kings.webp"
     },
     {
       "id": "arknights",
@@ -2068,7 +2086,8 @@
           "price": 1650000,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/arknights.webp"
     },
     {
       "id": "zenless-zone-zero",
@@ -2133,7 +2152,8 @@
           "group": "monthly-pass",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/zenless-zone-zero.webp"
     },
     {
       "id": "neverness-to-everness",
@@ -2222,7 +2242,8 @@
           "price": 15000,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/neverness-to-everness.webp"
     },
     {
       "id": "blood-strike",
@@ -2313,7 +2334,8 @@
           "price": 30003,
           "group": "pass"
         }
-      ]
+      ],
+      "image": "/game-art/blood-strike.webp"
     },
     {
       "id": "delta-force",
@@ -2407,7 +2429,8 @@
           "price": 22996,
           "group": "special-offer"
         }
-      ]
+      ],
+      "image": "/game-art/delta-force.webp"
     },
     {
       "id": "racing-master",
@@ -2495,7 +2518,8 @@
           "price": 1293500,
           "group": "bundle"
         }
-      ]
+      ],
+      "image": "/game-art/racing-master.webp"
     },
     {
       "id": "arena-of-valor",
@@ -2556,7 +2580,8 @@
           "label": "2390 Vouchers",
           "price": 475000
         }
-      ]
+      ],
+      "image": "/game-art/arena-of-valor.webp"
     },
     {
       "id": "azur-lane",
@@ -2644,7 +2669,8 @@
           "group": "bundle",
           "hot": true
         }
-      ]
+      ],
+      "image": "/game-art/azur-lane.webp"
     }
   ],
   "hiddenGames": [],
