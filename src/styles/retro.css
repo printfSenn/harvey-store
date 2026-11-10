@@ -163,6 +163,9 @@ h1,h2,h3,p { overflow-wrap:anywhere; } .hero h1 { margin:20px 0 18px; font-size:
   .live-toast { left:15px; bottom:15px; }
 }
 
+label select { width:100%; padding:13px 14px; color:var(--ink); outline:0; background:#100b27; border:1px solid var(--line); font:12px var(--mono); }
+label select:focus { border-color:var(--cyan); }
+
 /* News cards use the local game artwork as editorial cover photography. */
 .news-image.has-image::after { content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(transparent 28%,rgba(13,10,26,.68)); pointer-events:none; }
 .news-image.has-image > span { z-index:2; }
