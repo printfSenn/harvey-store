@@ -162,6 +162,10 @@ h1,h2,h3,p { overflow-wrap:anywhere; } .hero h1 { margin:20px 0 18px; font-size:
   .ticker-track-reverse { animation-duration:29s; }
   .live-toast { left:15px; bottom:15px; }
 }
+
+/* News cards use the local game artwork as editorial cover photography. */
+.news-image.has-image::after { content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(transparent 28%,rgba(13,10,26,.68)); pointer-events:none; }
+.news-image.has-image > span { z-index:2; }
 @media (prefers-reduced-motion:reduce) {
   .hero-visual,.hero-particle,.cursor-glow,.live-toast,.game-card,.pixel-game-art,.ticker-track { animation:none !important; transition:none !important; }
   .ticker-track { transform:none !important; }
