@@ -603,16 +603,6 @@ export const games = [
       {
         "label": "11000 VP",
         "price": 1099000
-      },
-      {
-        "label": "Battle Pass (1000 VP)",
-        "price": 112000,
-        "group": "pass"
-      },
-      {
-        "label": "Starter Bundle (2050 VP)",
-        "price": 224000,
-        "group": "bundle"
       }
     ],
     "image": "/game-art/cards/valorant.png"
@@ -1463,31 +1453,6 @@ export const games = [
         "label": "Gold Pass",
         "price": 95794,
         "group": "pass"
-      },
-      {
-        "label": "Package $5",
-        "price": 83000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $10",
-        "price": 164500,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $20",
-        "price": 329000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $50",
-        "price": 822000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $100",
-        "price": 1645000,
-        "group": "bundle"
       }
     ],
     "image": "/game-art/cards/clash-of-clans.png"
@@ -1559,31 +1524,6 @@ export const games = [
         "label": "Diamond Pass",
         "price": 164413,
         "group": "pass"
-      },
-      {
-        "label": "Package $5",
-        "price": 78000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $10",
-        "price": 156000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $20",
-        "price": 312000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $50",
-        "price": 780000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $100",
-        "price": 1560000,
-        "group": "bundle"
       }
     ],
     "image": "/game-art/clash-royale.webp"
@@ -2065,26 +2005,6 @@ export const games = [
       {
         "label": "Weekly Growth Pack",
         "price": 165000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $10",
-        "price": 165000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $20",
-        "price": 330000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $50",
-        "price": 825000,
-        "group": "bundle"
-      },
-      {
-        "label": "Package $100",
-        "price": 1650000,
         "group": "bundle"
       }
     ],
