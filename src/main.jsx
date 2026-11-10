@@ -293,7 +293,7 @@ function Topbar({ page, menuOpen, setMenuOpen }) {
 
 const newsArticles = [
   {
-    slug: 'nominal-top-up-efisien', tag: 'GUIDE', image: '/game-art/mobile-legends.webp', title: 'Cara memilih nominal top up yang paling efisien', desc: 'Biar saldo tetap aman dan kebutuhan push rank tetap jalan.', date: '10 November 2026', source: 'Harvey Store Guide', lead: 'Nominal top up yang tepat bisa membuat budget bermain lebih teratur tanpa mengorbankan kebutuhan item dan rank.',
+    slug: 'nominal-top-up-efisien', tag: 'GUIDE', image: '/game-art/mobile-legends.png', title: 'Cara memilih nominal top up yang paling efisien', desc: 'Biar saldo tetap aman dan kebutuhan push rank tetap jalan.', date: '10 November 2026', source: 'Harvey Store Guide', lead: 'Nominal top up yang tepat bisa membuat budget bermain lebih teratur tanpa mengorbankan kebutuhan item dan rank.',
     sections: [
       ['Mulai dari kebutuhan utama', 'Catat dulu item, pass, atau diamond yang memang ingin dibeli. Dengan begitu, kamu tidak tergoda mengambil nominal terlalu besar hanya karena terlihat lebih murah di awal.'],
       ['Bandingkan harga per unit', 'Jangan hanya melihat angka bonus. Bandingkan total harga dengan jumlah currency yang diterima agar kamu tahu paket mana yang paling efisien untuk kebiasaan bermainmu.'],

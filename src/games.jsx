@@ -307,7 +307,7 @@ export const games = [
         "group": "weekly-card"
       }
     ],
-    "image": "/game-art/cards/mobile-legends.png"
+    "image": "/game-art/cards/mlbb.png"
   },
   {
     "id": "free-fire",
@@ -764,7 +764,7 @@ export const games = [
         "hot": true
       }
     ],
-    "image": "/game-art/cards/roblox.webp"
+    "image": "/game-art/cards/roblog.png"
   },
   {
     "id": "honkai-star-rail",
