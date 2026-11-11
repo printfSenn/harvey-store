@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import QRCode from 'qrcode';
-import { ArrowRight, BadgeCheck, Bell, Camera, Check, ChevronDown, Copy, CreditCard, ExternalLink, Gamepad2, Headphones, History, Home, LogIn, Menu, Newspaper, Search, ShieldCheck, Star, Ticket, Trash2, User, Wallet, X, Zap } from 'lucide-react';
+import { ArrowRight, BadgeCheck, Bell, Camera, Check, ChevronDown, Copy, CreditCard, Eye, EyeOff, ExternalLink, Gamepad2, Headphones, History, Home, LogIn, Menu, Newspaper, Search, ShieldCheck, Star, Ticket, Trash2, User, Wallet, X, Zap } from 'lucide-react';
 import { categories, games as baseGames, formatRupiah } from './games.jsx';
 import './styles/retro.css';
 
@@ -29,6 +29,7 @@ const STORAGE_KEYS = Object.freeze({
   artworkBackup: 'harvey_game_artwork_backup',
   ratings: 'harvey_transaction_ratings',
   loyaltyRedemptions: 'harvey_loyalty_redemptions',
+  notifications: 'harvey_store_notifications',
 });
 
 const readStoredValue = (key, fallback = null) => {
@@ -56,6 +57,63 @@ const writeStoredValue = (key, value) => {
 
 const writeStoredList = (key, value) => writeStoredValue(key, value);
 const removeStoredValue = (key) => { try { window.localStorage.removeItem(key); } catch { /* local storage may be unavailable */ } };
+
+const EMAIL_PATTERN = /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$/i;
+const USERNAME_PATTERN = /^[A-Za-z][A-Za-z0-9_.-]{2,23}$/;
+const PLAYER_INPUT_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} _.-]{1,63}$/u;
+
+const isValidEmail = (value) => {
+  const email = String(value || '').trim();
+  if (email.length > 254 || !EMAIL_PATTERN.test(email)) return false;
+  const [localPart, domain] = email.split('@');
+  return localPart.length <= 64 && !localPart.includes('..') && !domain.includes('..');
+};
+
+const isValidUsername = (value) => USERNAME_PATTERN.test(String(value || '').trim());
+const isValidPlayerInput = (value) => PLAYER_INPUT_PATTERN.test(String(value || '').trim());
+const isValidRegistrationPassword = (value) => String(value || '').length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value) && !/\s/.test(value);
+
+const getAccountNotifications = (accountId) => readStoredList(STORAGE_KEYS.notifications)
+  .filter((notification) => notification.accountId === accountId)
+  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+const saveAccountNotifications = (notifications) => {
+  const saved = writeStoredList(STORAGE_KEYS.notifications, notifications);
+  if (saved) window.dispatchEvent(new Event('mbr-notifications-updated'));
+  return saved;
+};
+
+const addAccountNotification = (accountId, notification) => {
+  if (!accountId) return false;
+  const notifications = readStoredList(STORAGE_KEYS.notifications);
+  const nextNotification = {
+    id: notification.id || `notice-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    accountId,
+    createdAt: new Date().toISOString(),
+    read: false,
+    ...notification,
+  };
+  return saveAccountNotifications([nextNotification, ...notifications.filter((item) => item.id !== nextNotification.id)]);
+};
+
+const syncOrderNotifications = (accountId) => {
+  if (!accountId) return [];
+  const notifications = readStoredList(STORAGE_KEYS.notifications);
+  const orders = readStoredList(STORAGE_KEYS.orders).filter((order) => order.accountId === accountId && order.status === 'Paid');
+  const knownIds = new Set(notifications.map((notification) => notification.id));
+  const missing = orders.filter((order) => !knownIds.has(`order-paid-${order.id}`)).map((order) => ({
+    id: `order-paid-${order.id}`,
+    accountId,
+    title: 'Order berhasil',
+    message: `${order.game} · ${order.nominal} sudah tercatat dan siap diproses.`,
+    type: 'order',
+    orderId: order.id,
+    createdAt: order.createdAt || new Date().toISOString(),
+    read: false,
+  }));
+  if (missing.length) saveAccountNotifications([...missing, ...notifications]);
+  return getAccountNotifications(accountId);
+};
 
 const getCatalogGames = () => {
   if (Array.isArray(window.__mbrCatalogSnapshot)) return window.__mbrCatalogSnapshot;
@@ -291,13 +349,44 @@ function App() {
 
 function Topbar({ page, menuOpen, setMenuOpen }) {
   const [session, setSession] = useState(() => readStoredValue(STORAGE_KEYS.session));
+  const [notifications, setNotifications] = useState(() => {
+    const currentSession = readStoredValue(STORAGE_KEYS.session);
+    return currentSession?.accountId ? getAccountNotifications(currentSession.accountId) : [];
+  });
+  const [notificationOpen, setNotificationOpen] = useState(false);
   useEffect(() => {
     const syncSession = () => setSession(readStoredValue(STORAGE_KEYS.session));
     window.addEventListener('storage', syncSession);
     return () => window.removeEventListener('storage', syncSession);
   }, []);
+  useEffect(() => {
+    const refreshNotifications = () => setNotifications(session?.accountId ? syncOrderNotifications(session.accountId) : []);
+    refreshNotifications();
+    window.addEventListener('storage', refreshNotifications);
+    window.addEventListener('mbr-notifications-updated', refreshNotifications);
+    return () => {
+      window.removeEventListener('storage', refreshNotifications);
+      window.removeEventListener('mbr-notifications-updated', refreshNotifications);
+    };
+  }, [session?.accountId]);
   const displayName = session?.username || 'LOGIN / SIGN UP';
-  return <header className="topbar"><div className="container nav-inner"><a className="brand" href="index.html" aria-label="Harvey Store home"><span className="brand-mark"><Gamepad2 size={23} /></span><span className="brand-name"><b>HARVEY</b><i>STORE</i></span></a><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Buka menu">{menuOpen ? <X size={22} /> : <Menu size={22} />}</button><nav className={`nav-links ${menuOpen ? 'is-open' : ''}`}>{navItems.map(({ href, label, icon: Icon, page: itemPage }) => <a key={href} className={page === itemPage ? 'active' : ''} href={href}><Icon size={15} /> {label}</a>)}</nav><div className="nav-actions"><button className="icon-button" aria-label="Notifikasi"><span className="notification-wrap"><Bell size={17} /><span className="notification-dot" aria-hidden="true" /></span></button><a className="profile-chip" href="account.html"><span className="avatar">{session?.avatar ? <img src={session.avatar} alt="" /> : displayName[0].toUpperCase()}</span><span>{displayName}</span><ChevronDown size={14} /></a></div></div></header>;
+  const unreadCount = notifications.filter((notification) => !notification.read).length;
+  const markAllRead = () => {
+    if (!session?.accountId || !unreadCount) return;
+    const allNotifications = readStoredList(STORAGE_KEYS.notifications).map((notification) => notification.accountId === session.accountId ? { ...notification, read: true } : notification);
+    saveAccountNotifications(allNotifications);
+  };
+  const markRead = (notification) => {
+    if (!session?.accountId || notification.read) return;
+    const allNotifications = readStoredList(STORAGE_KEYS.notifications).map((item) => item.id === notification.id ? { ...item, read: true } : item);
+    saveAccountNotifications(allNotifications);
+  };
+  return <header className="topbar"><div className="container nav-inner"><a className="brand" href="index.html" aria-label="Harvey Store home"><span className="brand-mark"><Gamepad2 size={23} /></span><span className="brand-name"><b>HARVEY</b><i>STORE</i></span></a><button className="mobile-menu" onClick={() => setMenuOpen(!menuOpen)} aria-label="Buka menu">{menuOpen ? <X size={22} /> : <Menu size={22} />}</button><nav className={`nav-links ${menuOpen ? 'is-open' : ''}`}>{navItems.map(({ href, label, icon: Icon, page: itemPage }) => <a key={href} className={page === itemPage ? 'active' : ''} href={href}><Icon size={15} /> {label}</a>)}</nav><div className="nav-actions"><div className="notification-menu-wrap"><button className="icon-button" aria-label={`Notifikasi${unreadCount ? `, ${unreadCount} belum dibaca` : ''}`} aria-expanded={notificationOpen} onClick={() => setNotificationOpen((value) => !value)}><span className="notification-wrap"><Bell size={17} />{unreadCount > 0 && <span className="notification-dot" aria-hidden="true" />}</span></button>{notificationOpen && <div className="notification-panel" role="dialog" aria-label="Notifikasi"><div className="notification-panel-head"><span>NOTIFICATIONS</span>{unreadCount > 0 && <button type="button" onClick={markAllRead}>Tandai dibaca</button>}</div>{!session ? <div className="notification-empty"><Bell size={18} /><p>Login untuk melihat notifikasi akunmu.</p><a href="account.html?mode=login">Login sekarang</a></div> : notifications.length === 0 ? <div className="notification-empty"><Bell size={18} /><p>Belum ada notifikasi baru.</p></div> : <div className="notification-list">{notifications.slice(0, 8).map((notification) => <button type="button" className={`notification-item ${notification.read ? '' : 'is-unread'}`} key={notification.id} onClick={() => { markRead(notification); if (notification.orderId) openPage('history.html'); }}><span className="notification-item-icon"><Bell size={13} /></span><span><b>{notification.title}</b><small>{notification.message}</small><time>{new Date(notification.createdAt).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}</time></span></button>)}</div>}</div>}</div><a className="profile-chip" href="account.html"><span className="avatar">{session?.avatar ? <img src={session.avatar} alt="" /> : displayName[0].toUpperCase()}</span><span>{displayName}</span><ChevronDown size={14} /></a></div></div></header>;
+}
+
+function PasswordField({ label = 'Password', value, onChange, autoComplete, placeholder = 'Min. 8 karakter' }) {
+  const [visible, setVisible] = useState(false);
+  return <label>{label}<span className="password-field"><input type={visible ? 'text' : 'password'} value={value} onChange={onChange} autoComplete={autoComplete} placeholder={placeholder} required /><button type="button" className="password-toggle" onClick={() => setVisible((current) => !current)} aria-label={visible ? 'Sembunyikan password' : 'Tampilkan password'}>{visible ? <EyeOff size={16} /> : <Eye size={16} />}</button></span></label>;
 }
 
 const newsArticles = [
@@ -639,15 +728,19 @@ function TopupPage({ notify }) {
   const continueToPayment = () => {
     if (!game || !nominal) return;
     if (!session) return openPage('account.html?mode=login&return=topup.html');
-    if (!userId || !email) return notify(`Isi ${playerLabel} dan email dulu ya.`);
-    if (requiresServer && !server) return notify(`${isGenshin ? 'Pilih' : 'Isi'} ${serverFieldLabel} dulu ya.`);
-    const params = new URLSearchParams({ game: game.id, nominal: nominal.label, price: nominal.price, userId, server: requiresServer ? server : '', email });
+    if (!userId.trim()) return notify(`Isi ${playerLabel} dulu ya.`);
+    if (!isValidPlayerInput(userId)) return notify(`${playerLabel} hanya boleh berisi huruf, angka, spasi, titik, strip, atau underscore.`);
+    if (!isValidEmail(email)) return notify('Masukkan email yang valid, contoh: nama@gmail.com.');
+    if (requiresServer && !server.trim()) return notify(`${isGenshin ? 'Pilih' : 'Isi'} ${serverFieldLabel} dulu ya.`);
+    const params = new URLSearchParams({ game: game.id, nominal: nominal.label, price: nominal.price, userId: userId.trim(), server: requiresServer ? server.trim() : '', email: email.trim().toLowerCase() });
     openPage(`payment.html?${params.toString()}`);
   };
 
   const savePlayerProfile = () => {
     if (!game || !userId.trim()) return notify(`Isi ${playerLabel} dulu untuk menyimpan data.`);
+    if (!isValidPlayerInput(userId)) return notify(`${playerLabel} hanya boleh berisi huruf, angka, spasi, titik, strip, atau underscore.`);
     if (requiresServer && !server.trim()) return notify(`${isGenshin ? 'Pilih' : 'Isi'} ${serverFieldLabel} dulu untuk menyimpan data.`);
+    if (!isValidEmail(email)) return notify('Masukkan email yang valid sebelum menyimpan data player.');
     const profile = {
       id: `${game.id}:${userId.trim().toLowerCase()}:${server.trim().toLowerCase()}`,
       gameId: game.id,
@@ -655,7 +748,7 @@ function TopupPage({ notify }) {
       playerLabel,
       userId: userId.trim(),
       server: server.trim(),
-      email: email.trim(),
+      email: email.trim().toLowerCase(),
       updatedAt: new Date().toISOString(),
     };
     const nextProfiles = [profile, ...savedProfiles.filter((item) => item.id !== profile.id)];
@@ -671,7 +764,7 @@ function TopupPage({ notify }) {
     notify(`Data ${profile.userId} dimuat.`);
   };
 
-  return <section className="container page-section"><Breadcrumbs current="Top Up" /><PageIntro eyebrow="TOP UP TERMINAL" title="LOAD YOUR ACCOUNT" text="Pilih game, masukkan data player, lalu lanjutkan ke checkout yang aman." /><GamePicker selectedGameId={selectedGameId} onSelect={chooseGame} /><div className="topup-layout">{game ? <div className="topup-form panel"><div className="selected-game"><GameThumb game={game} /><div><span className="mini-label">SELECTED GAME</span><h2>{game.title}</h2><p>{game.genre} · {game.publisher}</p></div><a className="change-link" href="#game-picker">Ganti game</a></div><FormStep number="01" title="Player detail"><div className="field-row"><label>{playerLabel}<input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder={`${playerLabel} kamu`} /></label>{requiresServer && (isGenshin ? <label>Server<select value={server} onChange={(event) => setServer(event.target.value)}><option value="">Pilih server</option>{GAME_SERVER_OPTIONS['genshin-impact'].map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label> : <label>Server / Zone<input value={server} onChange={(event) => setServer(event.target.value)} placeholder="Server / zone" /></label>)}</div><label>Email untuk invoice<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email kamu" /></label><div className="player-save-row"><button type="button" className="text-button" onClick={savePlayerProfile}>Simpan data player</button><span className="local-data-note">Data player tersimpan</span></div>{savedProfilesForGame.length > 0 && <div className="saved-profiles"><span className="saved-profiles-label">DATA TERSIMPAN UNTUK {game.title.toUpperCase()}</span><div className="saved-profile-list">{savedProfilesForGame.map((profile) => <button type="button" className="saved-profile" key={profile.id} onClick={() => useSavedProfile(profile)}><span><b>{profile.userId}</b><small>{profile.playerLabel}{profile.server ? ` · ${profile.server}` : ''}</small></span><span className="saved-profile-use">PAKAI</span></button>)}</div></div>}</FormStep><FormStep number="02" title="Choose nominal">{itemGroups.length > 1 && <div className="category-tabs item-tabs">{itemGroups.map((group) => <button type="button" key={group.id} className={itemGroup === group.id ? 'active' : ''} onClick={() => setItemGroup(group.id)}>{group.label}</button>)}</div>}<div className="nominal-grid">{visibleNominals.map((item) => <button type="button" key={item.label} className={`nominal-card ${nominal?.label === item.label ? 'active' : ''}`} onClick={() => setNominal(item)}><span>{item.label}</span><b>{formatRupiah(item.price)}</b>{item.hot && <i>HOT</i>}</button>)}</div></FormStep><div className="form-notice"><ShieldCheck size={16} /><span>Data player dan transaksi tersimpan aman.</span></div></div> : <div className="topup-form panel topup-empty"><div className="empty-icon"><Gamepad2 size={25} /></div><span className="mini-label">READY PLAYER?</span><h2>Pilih game dulu</h2><p>Pilih game di grid atas untuk membuka nominal dan detail top up.</p><a className="button button-secondary" href="#game-picker">Pilih game <ArrowRight size={16} /></a></div>}{game ? <aside className="order-preview panel"><div className="panel-heading"><span>ORDER PREVIEW</span><span className="status-dot">READY</span></div><div className="preview-cover"><GameThumb game={game} /><div><span className="muted">Top up</span><h3>{game.title}</h3><p>{nominal?.label || 'Pilih nominal'}</p></div></div>{nominal && <Summary price={nominal.price} fee={1500} />}<button className="button button-primary full" onClick={continueToPayment} disabled={!nominal}>Continue payment <ArrowRight size={16} /></button><p className="tiny-note">Dengan lanjut, kamu menyetujui terms of service Harvey Store.</p></aside> : <aside className="order-preview panel empty-order"><div className="panel-heading"><span>ORDER PREVIEW</span><span className="status-dot">WAITING</span></div><div className="empty-preview"><Gamepad2 size={22} /><p>Pilih game untuk melihat order preview.</p></div><button className="button button-primary full" disabled>Continue payment <ArrowRight size={16} /></button></aside>}</div></section>;
+  return <section className="container page-section"><Breadcrumbs current="Top Up" /><PageIntro eyebrow="TOP UP TERMINAL" title="LOAD YOUR ACCOUNT" text="Pilih game, masukkan data player, lalu lanjutkan ke checkout yang aman." /><GamePicker selectedGameId={selectedGameId} onSelect={chooseGame} /><div className="topup-layout">{game ? <div className="topup-form panel"><div className="selected-game"><GameThumb game={game} /><div><span className="mini-label">SELECTED GAME</span><h2>{game.title}</h2><p>{game.genre} · {game.publisher}</p></div><a className="change-link" href="#game-picker">Ganti game</a></div><FormStep number="01" title="Player detail"><div className="field-row"><label>{playerLabel}<input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder={`${playerLabel} kamu`} required minLength="2" maxLength="64" /></label>{requiresServer && (isGenshin ? <label>Server<select value={server} onChange={(event) => setServer(event.target.value)} required><option value="">Pilih server</option>{GAME_SERVER_OPTIONS['genshin-impact'].map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label> : <label>Server / Zone<input value={server} onChange={(event) => setServer(event.target.value)} placeholder="Server / zone" required maxLength="40" /></label>)}</div><label>Email untuk invoice<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@gmail.com" autoComplete="email" required maxLength="254" /></label><div className="player-save-row"><button type="button" className="text-button" onClick={savePlayerProfile}>Simpan data player</button><span className="local-data-note">Data player tersimpan</span></div>{savedProfilesForGame.length > 0 && <div className="saved-profiles"><span className="saved-profiles-label">DATA TERSIMPAN UNTUK {game.title.toUpperCase()}</span><div className="saved-profile-list">{savedProfilesForGame.map((profile) => <button type="button" className="saved-profile" key={profile.id} onClick={() => useSavedProfile(profile)}><span><b>{profile.userId}</b><small>{profile.playerLabel}{profile.server ? ` · ${profile.server}` : ''}</small></span><span className="saved-profile-use">PAKAI</span></button>)}</div></div>}</FormStep><FormStep number="02" title="Choose nominal">{itemGroups.length > 1 && <div className="category-tabs item-tabs">{itemGroups.map((group) => <button type="button" key={group.id} className={itemGroup === group.id ? 'active' : ''} onClick={() => setItemGroup(group.id)}>{group.label}</button>)}</div>}<div className="nominal-grid">{visibleNominals.map((item) => <button type="button" key={item.label} className={`nominal-card ${nominal?.label === item.label ? 'active' : ''}`} onClick={() => setNominal(item)}><span>{item.label}</span><b>{formatRupiah(item.price)}</b>{item.hot && <i>HOT</i>}</button>)}</div></FormStep><div className="form-notice"><ShieldCheck size={16} /><span>Data player dan transaksi tersimpan aman.</span></div></div> : <div className="topup-form panel topup-empty"><div className="empty-icon"><Gamepad2 size={25} /></div><span className="mini-label">READY PLAYER?</span><h2>Pilih game dulu</h2><p>Pilih game di grid atas untuk membuka nominal dan detail top up.</p><a className="button button-secondary" href="#game-picker">Pilih game <ArrowRight size={16} /></a></div>}{game ? <aside className="order-preview panel"><div className="panel-heading"><span>ORDER PREVIEW</span><span className="status-dot">READY</span></div><div className="preview-cover"><GameThumb game={game} /><div><span className="muted">Top up</span><h3>{game.title}</h3><p>{nominal?.label || 'Pilih nominal'}</p></div></div>{nominal && <Summary price={nominal.price} fee={1500} />}<button className="button button-primary full" onClick={continueToPayment} disabled={!nominal}>Continue payment <ArrowRight size={16} /></button><p className="tiny-note">Dengan lanjut, kamu menyetujui terms of service Harvey Store.</p></aside> : <aside className="order-preview panel empty-order"><div className="panel-heading"><span>ORDER PREVIEW</span><span className="status-dot">WAITING</span></div><div className="empty-preview"><Gamepad2 size={22} /><p>Pilih game untuk melihat order preview.</p></div><button className="button button-primary full" disabled>Continue payment <ArrowRight size={16} /></button></aside>}</div></section>;
 }
 
 function DemoQrCode({ value, amount }) {
@@ -724,6 +817,8 @@ function PaymentPage({ notify }) {
 
   const pay = () => {
     if (paid || !session) return;
+    if (!isValidPlayerInput(userId)) return notify(`Data ${playerLabel} tidak valid. Periksa kembali input player.`);
+    if (!isValidEmail(email)) return notify('Email invoice tidak valid. Kembali ke Top Up dan perbaiki email.');
     if (method === 'QRIS' && !qrisRequested) {
       setQrisRequested(true);
       return;
@@ -761,6 +856,7 @@ function PaymentPage({ notify }) {
       notify('Transaksi gagal diproses.');
       return;
     }
+    addAccountNotification(session.accountId, { id: `order-paid-${order.id}`, title: 'Order berhasil', message: `${order.game} · ${order.nominal} sudah tercatat dan siap diproses.`, type: 'order', orderId: order.id });
     setPaid(true);
     setCompletedOrderId(order.id);
     notify('Order berhasil dibuat. GG, player!');
@@ -811,16 +907,19 @@ function AccountPage({ notify }) {
       if (mode === 'register') {
         const cleanUsername = username.trim();
         const cleanEmail = email.trim().toLowerCase();
-        if (cleanUsername.length < 3) throw new Error('Username minimal 3 karakter.');
-        if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) throw new Error('Masukkan email yang valid.');
-        if (password.length < 6) throw new Error('Password minimal 6 karakter.');
+        if (!isValidUsername(cleanUsername)) throw new Error('Nama pengguna harus 3–24 karakter, diawali huruf, tanpa spasi.');
+        if (!isValidEmail(cleanEmail)) throw new Error('Email tidak valid. Gunakan format seperti nama@gmail.com.');
+        if (!isValidRegistrationPassword(password)) throw new Error('Password minimal 8 karakter, harus punya huruf dan angka, tanpa spasi.');
         if (accounts.some((account) => account.username.toLowerCase() === cleanUsername.toLowerCase())) throw new Error('Username sudah dipakai.');
         if (accounts.some((account) => account.email.toLowerCase() === cleanEmail)) throw new Error('Email sudah terdaftar.');
         const account = { id: `ACC-${Date.now()}-${Math.floor(Math.random() * 1000)}`, username: cleanUsername, email: cleanEmail, passwordHash: await hashPassword(password), createdAt: new Date().toISOString() };
         if (!writeStoredList(STORAGE_KEYS.accounts, [account, ...accounts])) throw new Error('Akun tidak bisa dibuat.');
+        addAccountNotification(account.id, { id: `welcome-${account.id}`, title: 'Selamat datang di Harvey Store', message: 'Akun kamu sudah aktif. Yuk mulai top up game favoritmu.', type: 'welcome' });
         completeLogin(account);
       } else {
         const cleanIdentifier = identifier.trim().toLowerCase();
+        if (!cleanIdentifier) throw new Error('Masukkan email atau username.');
+        if (!password) throw new Error('Masukkan password.');
         const account = accounts.find((item) => item.email.toLowerCase() === cleanIdentifier || item.username.toLowerCase() === cleanIdentifier);
         if (!account || account.passwordHash !== await hashPassword(password)) throw new Error('Username/email atau password salah.');
         completeLogin(account);
@@ -864,7 +963,7 @@ function AccountPage({ notify }) {
 
   if (session) return <section className="container page-section"><Breadcrumbs current="Account" /><PageIntro eyebrow="PLAYER ACCOUNT" title="WELCOME BACK" text="Akun kamu aktif dan siap dipakai." /><div className="account-card panel account-signed-in"><div className="profile-photo-editor"><div className="profile-avatar-large">{profilePhoto ? <img src={profilePhoto} alt="Foto profil" /> : <span>{session.username[0].toUpperCase()}</span>}</div><div><span className="mini-label">PROFILE PHOTO</span><p>Pilih foto baru untuk memperbarui tampilan akunmu.</p><div className="profile-photo-actions"><label className="button button-primary photo-upload"><Camera size={15} /> Ganti foto<input type="file" accept="image/*" onChange={handleProfilePhoto} /></label>{profilePhoto && <button type="button" className="button button-ghost" onClick={removeProfilePhoto}><Trash2 size={15} /> Hapus</button>}</div></div></div><span className="mini-label">SIGNED IN AS</span><h2>{session.username}</h2><p>{session.email}</p><div className="account-actions"><a className="button button-primary" href="history.html"><History size={16} /> View history</a><button type="button" className="button button-ghost" onClick={logout}>Logout</button></div></div><LoyaltyPanel accountId={session.accountId} notify={notify} /></section>;
 
-  return <section className="container page-section"><Breadcrumbs current="Account" /><PageIntro eyebrow="PLAYER ACCOUNT" title={mode === 'login' ? 'WELCOME PLAYER' : 'JOIN THE STORE'} text={mode === 'login' ? 'Login untuk melihat history dan menghubungkan order ke akunmu.' : 'Buat akun untuk menyimpan history order dengan rapi.'} /><div className="account-layout"><form className="account-card panel" onSubmit={submit}><div className="panel-heading"><span>{mode === 'login' ? 'LOGIN' : 'CREATE NEW ACCOUNT'}</span><User size={17} /></div>{mode === 'register' ? <><label>Username<input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Username kamu" autoComplete="username" /></label><label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email kamu" autoComplete="email" /></label></> : <label>Email atau username<input value={identifier} onChange={(event) => setIdentifier(event.target.value)} placeholder="Email atau username" autoComplete="username" /> </label>}<label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Minimal 6 karakter" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} /></label>{error && <p className="auth-error">{error}</p>}<button type="submit" className="button button-primary full" disabled={busy}>{busy ? 'Processing...' : mode === 'login' ? 'Login' : 'Create account'} <ArrowRight size={16} /></button><p className="tiny-note">Akunmu siap dipakai saat kamu kembali.</p></form><aside className="account-side panel"><span className="mini-label">PLAYER ACCESS</span><h2>{mode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}</h2><p>{mode === 'login' ? 'Buat akun baru untuk mulai menyimpan history order per player.' : 'Login untuk melanjutkan ke akun dan order yang sudah tersimpan.'}</p><button type="button" className="button button-ghost" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>{mode === 'login' ? 'Create new account' : 'Login instead'}</button></aside></div></section>;
+  return <section className="container page-section"><Breadcrumbs current="Account" /><PageIntro eyebrow="PLAYER ACCOUNT" title={mode === 'login' ? 'WELCOME PLAYER' : 'JOIN THE STORE'} text={mode === 'login' ? 'Login untuk melihat history dan menghubungkan order ke akunmu.' : 'Buat akun untuk menyimpan history order dengan rapi.'} /><div className="account-layout"><form className="account-card panel" onSubmit={submit}><div className="panel-heading"><span>{mode === 'login' ? 'LOGIN' : 'CREATE NEW ACCOUNT'}</span><User size={17} /></div>{mode === 'register' ? <><label>Username<input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Username kamu" autoComplete="username" required minLength="3" maxLength="24" pattern="[A-Za-z][A-Za-z0-9_.-]{2,23}" title="3–24 karakter, diawali huruf, tanpa spasi" /></label><label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@gmail.com" autoComplete="email" required maxLength="254" /></label></> : <label>Email atau username<input value={identifier} onChange={(event) => setIdentifier(event.target.value)} placeholder="Email atau username" autoComplete="username" required maxLength="254" /> </label>}<PasswordField label="Password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder={mode === 'register' ? 'Min. 8 karakter, huruf + angka' : 'Masukkan password'} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} />{error && <p className="auth-error">{error}</p>}<button type="submit" className="button button-primary full" disabled={busy}>{busy ? 'Processing...' : mode === 'login' ? 'Login' : 'Create account'} <ArrowRight size={16} /></button><p className="tiny-note">Akunmu siap dipakai saat kamu kembali.</p></form><aside className="account-side panel"><span className="mini-label">PLAYER ACCESS</span><h2>{mode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?'}</h2><p>{mode === 'login' ? 'Buat akun baru untuk mulai menyimpan history order per player.' : 'Login untuk melanjutkan ke akun dan order yang sudah tersimpan.'}</p><button type="button" className="button button-ghost" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>{mode === 'login' ? 'Create new account' : 'Login instead'}</button></aside></div></section>;
 }
 
 function LoyaltyPanel({ accountId, notify }) {
@@ -919,7 +1018,7 @@ function AdminPage({ notify }) {
     notify('Admin sudah logout.');
   };
 
-  if (!adminSession) return <section className="container page-section"><div className="admin-login panel"><div className="auth-required-icon"><ShieldCheck size={24} /></div><h1>ADMIN LOGIN</h1><p>Kelola katalog bersama. Perubahan akan dikirim ke semua halaman user yang sedang terbuka.</p><form onSubmit={login}><label>Username<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" placeholder="Username admin" /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" placeholder="Password admin" /></label>{error && <p className="auth-error">{error}</p>}<button type="submit" className="button button-primary full">Masuk ke admin <ArrowRight size={16} /></button></form><p className="tiny-note">Demo server: admin / admin123</p></div></section>;
+  if (!adminSession) return <section className="container page-section"><div className="admin-login panel"><div className="auth-required-icon"><ShieldCheck size={24} /></div><h1>ADMIN LOGIN</h1><p>Kelola katalog bersama. Perubahan akan dikirim ke semua halaman user yang sedang terbuka.</p><form onSubmit={login}><label>Username<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="username" placeholder="Username admin" required maxLength="32" /></label><PasswordField label="Password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" placeholder="Password admin" />{error && <p className="auth-error">{error}</p>}<button type="submit" className="button button-primary full">Masuk ke admin <ArrowRight size={16} /></button></form><p className="tiny-note">Demo server: admin / admin123</p></div></section>;
   return <AdminDashboardV2 notify={notify} logout={logout} />;
 }
 
